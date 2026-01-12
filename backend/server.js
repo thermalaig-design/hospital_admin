@@ -17,10 +17,10 @@ import profileRoutes from './routes/profileRoutes.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load env variables
+// Load environment variables
 dotenv.config();
 
-// Init app
+// Initialize express app
 const app = express();
 const PORT = process.env.PORT || 5001;
 
@@ -31,50 +31,54 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Ignore favicon error
+// Handle favicon requests
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 
-// Request logging middleware
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
-  next();
+// --------------------
+// HEALTH CHECK ROUTES
+// --------------------
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Hospital Management Backend API running 🚀',
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      auth: '/api/auth',
+      members: '/api/members',
+      appointments: '/api/appointments',
+      reports: '/api/reports',
+      referrals: '/api/referrals',
+      profile: '/api/profile'
+    }
+  });
+});
+
+app.get('/api', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Hospital Management API',
+    version: '1.0.0',
+    endpoints: {
+      auth: '/api/auth',
+      members: '/api/members',
+      appointments: '/api/appointments',
+      reports: '/api/reports',
+      referrals: '/api/referrals',
+      profile: '/api/profile'
+    }
+  });
 });
 
 // --------------------
 // API ROUTES
 // --------------------
-console.log('🔄 Loading API routes...');
 app.use('/api/auth', authRoutes);
-console.log('✅ Auth routes loaded');
 app.use('/api/appointments', appointmentRoutes);
-console.log('✅ Appointment routes loaded');
 app.use('/api/reports', reportRoutes);
-console.log('✅ Report routes loaded');
 app.use('/api/referrals', referralRoutes);
-console.log('✅ Referral routes loaded');
 app.use('/api/profile', profileRoutes);
-console.log('✅ Profile routes loaded');
-app.use('/api', memberRoutes); // Member routes should be last to avoid catching other routes
-console.log('✅ Member routes loaded');
-// API test route (optional)
-app.get('/api', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Trustee Portal API running 🚀',
-  });
-});
-
-// --------------------
-// FRONTEND SERVE
-// --------------------
-const frontendPath = path.join(__dirname, '../dist');
-
-app.use(express.static(frontendPath));
-
-// React routing support
-app.get('*', (req, res) => {
-  res.sendFile(path.join(frontendPath, 'index.html'));
-});
+app.use('/api', memberRoutes); // Member routes last to avoid catching other routes
 
 // --------------------
 // ERROR HANDLING
@@ -86,7 +90,8 @@ app.use(errorHandler);
 // START SERVER
 // --------------------
 app.listen(PORT, () => {
-  console.log('🚀 Server running on port', PORT);
-  console.log('🌐 App URL:', `http://localhost:${PORT}`);
-  console.log('🔗 API URL:', `http://localhost:${PORT}/api`);
+  console.log('🚀 Server is running on port', PORT);
+  console.log(`📍 API URL: http://localhost:${PORT}`);
+  console.log(`📍 Health Check: http://localhost:${PORT}/`);
+  console.log('🌐 Production URL:', `https://hospital-management-3-7z4c.onrender.com`);
 });

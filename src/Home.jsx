@@ -19,7 +19,7 @@ const Home = ({ onNavigate, onLogout, isMember }) => {
           if (userId) {
             // Try to load from Supabase
             try {
-              const response = await fetch('http://localhost:5001/api/profile', {
+              const response = await fetch('https://hospital-management-3-7z4c.onrender.com/api/profile', {
                 headers: {
                   'user-id': userId
                 }

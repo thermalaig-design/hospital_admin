@@ -1,5 +1,5 @@
 // appointmentService.js - Frontend service for appointment booking
-const API_URL = 'http://localhost:5001/api';
+const API_URL = 'https://hospital-management-3-7z4c.onrender.com/api';
 
 /**
  * Book a new appointment

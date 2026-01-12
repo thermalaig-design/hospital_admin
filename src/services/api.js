@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5001/api';
+const API_BASE_URL = 'https://hospital-management-3-7z4c.onrender.com/api';
 
 // Create axios instance
 export const api = axios.create({
@@ -214,7 +214,7 @@ export const preloadCommonData = async () => {
   try {
     // Load small amounts of data in parallel for quick initial load
     const [membersPreview, memberTypes, hospitals] = await Promise.allSettled([
-      getMembersPreview(50),  // Get a small preview
+      getMembersPage(1, 50),  // Get a small preview
       getMemberTypes(),
       getAllHospitals()       // Hospitals are typically small dataset
     ]);
