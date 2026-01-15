@@ -52,8 +52,8 @@ const Home = ({ onNavigate }) => {
 
   return (
     <div className="min-h-screen w-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      <header className="w-full border-b border-gray-200 bg-white/80 backdrop-blur-xl shadow-sm">
-        <div className="w-full px-6 lg:px-10">
+        <header className="w-full border-b border-gray-200 bg-white/80 backdrop-blur-xl shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg">
@@ -77,7 +77,7 @@ const Home = ({ onNavigate }) => {
         </div>
       </header>
 
-      <main className="w-full px-6 lg:px-10 py-6 lg:py-10">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8 lg:mb-12">
           {quickStats.map((stat, index) => (
             <div 
