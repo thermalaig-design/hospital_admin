@@ -1,308 +1,168 @@
-import React, { useState, useEffect } from 'react';
-import { User, Users, Clock, FileText, UserPlus, Bell, ChevronRight, LogOut, Heart, Shield, Plus, ArrowRight, Pill, ShoppingCart, Calendar, Stethoscope, Building2, Phone, QrCode, Monitor, Brain, Package, FileCheck, Search, Filter, MapPin, Star, HelpCircle, BookOpen, Video, Headphones, Menu, X, Home as HomeIcon, Settings, UserCircle } from 'lucide-react';
-import Sidebar from './components/Sidebar';
+import React from 'react';
+import { Database, Calendar, HeartPulse, Stethoscope, Activity, Users, Building2, Clock, TrendingUp, ArrowRight } from 'lucide-react';
+import NotificationsSection from './components/NotificationsSection';
 
-/* eslint-disable react-refresh/only-export-components */
-const Home = ({ onNavigate, onLogout, isMember }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [userProfile, setUserProfile] = useState(null);
+const Home = ({ onNavigate }) => {
 
-  useEffect(() => {
-    // Load profile from Supabase first, then fallback to localStorage
-    const loadProfile = async () => {
-      const user = localStorage.getItem('user');
-      if (user) {
-        try {
-          const parsedUser = JSON.parse(user);
-          const userId = parsedUser['Membership number'] || parsedUser.mobile || parsedUser.id;
-          
-          if (userId) {
-            // Try to load from Supabase
-            try {
-              const response = await fetch('https://hospital-management-3-7z4c.onrender.com/api/profile', {
-                headers: {
-                  'user-id': userId
-                }
-              });
-              
-              const data = await response.json();
-              if (data.success && data.profile) {
-                // Map database fields to profile format
-                const mappedProfile = {
-                  name: data.profile.name || '',
-                  profilePhotoUrl: data.profile.profile_photo_url || ''
-                };
-                setUserProfile(mappedProfile);
-                return;
-              }
-            } catch (error) {
-              console.error('Error loading from Supabase:', error);
-            }
-          }
-          
-          // Fallback to localStorage
-          const userKey = `userProfile_${parsedUser.Mobile || parsedUser.mobile || parsedUser.id || 'default'}`;
-          const savedProfile = localStorage.getItem(userKey);
-          if (savedProfile) {
-            setUserProfile(JSON.parse(savedProfile));
-          }
-        } catch (error) {
-          console.error('Error loading user profile:', error);
-        }
-      }
-    };
-    
-    loadProfile();
-  }, []);
-  // const recentNotices = [
-  //   { id: 1, title: 'Free Cardiac Checkup', date: 'Dec 29, 2024', tag: 'Health Camp' },
-  //   { id: 2, title: 'New Specialist Joined', date: 'Dec 28, 2024', tag: 'Hiring' },
-  // ];
-
-  const quickActions = [
-    { id: 'directory', title: 'Directory', desc: 'Find Doctors & Hospitals', icon: Users, color: 'bg-blue-100', iconColor: 'text-blue-600', screen: 'directory' },
-    { id: 'appointment', title: 'Book Appointment', desc: 'Schedule Doctor Visit', icon: Clock, color: 'bg-indigo-100', iconColor: 'text-indigo-600', screen: 'appointment', memberOnly: true },
-    { id: 'reports', title: 'Reports', desc: 'Medical Test Results', icon: FileText, color: 'bg-orange-100', iconColor: 'text-orange-600', screen: 'reports' },
-    { id: 'reference', title: 'Patient Referral', desc: 'Refer Patient to Doctor', icon: UserPlus, color: 'bg-teal-100', iconColor: 'text-teal-600', screen: 'reference' },
+  const adminActions = [
+    { 
+      id: 'directory', 
+      title: 'Directory', 
+      desc: 'Manage Members, Hospitals, Doctors', 
+      icon: Database, 
+      gradient: 'from-blue-600 to-indigo-700',
+      lightBg: 'bg-blue-50',
+      screen: 'admin' 
+    },
+    { 
+      id: 'appointments', 
+      title: 'Appointments', 
+      desc: 'Schedule & Manage Appointments', 
+      icon: Calendar, 
+      gradient: 'from-emerald-600 to-teal-700',
+      lightBg: 'bg-emerald-50',
+      screen: 'admin' 
+    },
+    { 
+      id: 'referrals', 
+      title: 'Patient Referrals', 
+      desc: 'Refer & Track Patients', 
+      icon: HeartPulse, 
+      gradient: 'from-rose-600 to-pink-700',
+      lightBg: 'bg-rose-50',
+      screen: 'admin' 
+    },
+    { 
+      id: 'medical', 
+      title: 'Medical Records', 
+      desc: 'Access Patient Medical History', 
+      icon: Stethoscope, 
+      gradient: 'from-violet-600 to-purple-700',
+      lightBg: 'bg-violet-50',
+      screen: 'admin' 
+    },
   ];
 
-  const marqueeUpdates = [
-    'Free Cardiac Checkup Camp on March 29, 2026',
-    'New Specialist Dr. Neha Kapoor Joined',
-    '24x7 Emergency Helpline: 1800-XXX-XXXX',
-    'Tele Consultation Services Now Available',
-    'Home Delivery of Medicines Available',
-    'Free Health Camp at Main Hospital',
-    'New MRI Machine Installed',
-    'OPD Timings: 9 AM to 5 PM',
-    'Emergency Services Available 24/7',
+  const quickStats = [
+    { label: 'Total Doctors', value: '248', icon: Users, color: 'text-blue-600', bg: 'bg-blue-100' },
+    { label: 'Hospitals', value: '12', icon: Building2, color: 'text-emerald-600', bg: 'bg-emerald-100' },
+    { label: 'Active Cases', value: '1,847', icon: Activity, color: 'text-rose-600', bg: 'bg-rose-100' },
+    { label: 'Appointments Today', value: '156', icon: Clock, color: 'text-amber-600', bg: 'bg-amber-100' },
   ];
-
-  // const services = [
-  //   { id: 'opd-registration', title: 'OPD Self Registration', icon: QrCode, color: 'bg-purple-500' },
-  //   { id: 'opd-appointment', title: 'OPD Appointment', icon: Calendar, color: 'bg-purple-500' },
-  //   { id: 'medicines-received', title: 'Medicines Received', icon: Pill, color: 'bg-purple-500' },
-  //   { id: 'teleconsultation', title: 'Tele Consultation', icon: Monitor, color: 'bg-purple-500' },
-  //   { id: 'home-delivery', title: 'Home Delivery of Medicines', icon: ShoppingCart, color: 'bg-purple-500' },
-  //   { id: 'tele-manas', title: 'Tele Manas', icon: Brain, color: 'bg-purple-500' },
-  //   { id: 'e-medical-pass', title: 'e-Medical Pass', icon: FileCheck, color: 'bg-purple-500' },
-  // ];
-
-  // const enquiry = [
-  //   { id: 'specialities', title: 'Availability of Specialities', icon: Stethoscope, color: 'bg-purple-500' },
-  //   { id: 'lab-tests', title: 'Availability of Lab Tests', icon: Search, color: 'bg-purple-500' },
-  //   { id: 'drugs', title: 'Availability of Drugs', icon: Pill, color: 'bg-purple-500' },
-  //   { id: 'hcos', title: 'Empanelled HCOs Directory', icon: Building2, color: 'bg-purple-500' },
-  //   { id: 'emergency-contacts', title: 'Emergency Contacts', icon: Phone, color: 'bg-purple-500' },
-  //   { id: 'helpline', title: '24x7 Emergency Helpline', icon: Phone, color: 'bg-purple-500' },
-  //   { id: 'health-info', title: 'Health Information', icon: Heart, color: 'bg-purple-500' },
-  // ];
-
-  // const userSupport = [
-  //   { id: 'help-desk', title: 'HMIS Help Desk', icon: Headphones, color: 'bg-purple-500' },
-  //   { id: 'videos', title: 'Videos', icon: Video, color: 'bg-purple-500' },
-  //   { id: 'user-manuals', title: 'User Manuals', icon: BookOpen, color: 'bg-purple-500' },
-  //   { id: 'handouts', title: 'Handouts', icon: FileText, color: 'bg-purple-500' },
-  // ];
 
   return (
-    <div className="bg-white min-h-screen relative">
-      {/* Navbar */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-50 shadow-sm">
-        <button
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="p-2 rounded-xl hover:bg-gray-100 transition-colors"
-        >
-          {isMenuOpen ? <X className="h-6 w-6 text-gray-700" /> : <Menu className="h-6 w-6 text-gray-700" />}
-        </button>
-        <h1 className="text-lg font-bold text-gray-800">Home</h1>
-        <div className="flex items-center gap-2">
-          <button 
-            onClick={() => onNavigate('profile')}
-            className="p-1 rounded-xl hover:bg-gray-100 transition-colors flex items-center justify-center"
-          >
-            {userProfile?.profilePhotoUrl ? (
-              <img 
-                src={userProfile.profilePhotoUrl} 
-                alt="Profile" 
-                className="h-8 w-8 rounded-lg object-cover border-2 border-indigo-200"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  if (userProfile?.name) {
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
-                  }
-                }}
-              />
-            ) : null}
-            {userProfile?.name && !userProfile?.profilePhotoUrl ? (
-              <div className="h-8 w-8 bg-indigo-100 text-indigo-700 rounded-lg flex items-center justify-center text-xs font-bold border-2 border-indigo-200">
-                {userProfile.name.charAt(0).toUpperCase()}
+    <div className="min-h-screen w-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/20 via-transparent to-transparent"></div>
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50"></div>
+
+      <header className="relative z-10 border-b border-white/10 bg-slate-900/50 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 lg:h-20">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl">
+                <Activity className="h-6 w-6 text-white" />
               </div>
-            ) : !userProfile?.profilePhotoUrl ? (
-              <UserCircle className="h-7 w-7 text-gray-700" />
-            ) : null}
-          </button>
-          <button 
-            onClick={onLogout}
-            className="p-2 rounded-xl hover:bg-gray-100 transition-colors"
-          >
-            <LogOut className="h-5 w-5 text-gray-700" />
-          </button>
-
-        </div>
-      </div>
-
-      <Sidebar
-        isOpen={isMenuOpen}
-        onClose={() => setIsMenuOpen(false)}
-        onNavigate={onNavigate}
-        currentPage="home"
-      />
-
-      {/* Header Section - Premium VIP Design */}
-      <div className="bg-gradient-to-br from-white to-gray-50 px-4 sm:px-6 pt-6 sm:pt-8 pb-6 border-b border-gray-100">
-        <div className="flex items-center gap-3 sm:gap-5">
-          <div className="bg-white p-3 sm:p-4 rounded-2xl sm:rounded-3xl shadow-lg border-2 border-gray-100 flex-shrink-0">
-            <img src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1767090787454.png?width=8000&height=8000&resize=contain" alt="Logo" className="h-12 w-12 sm:h-16 sm:w-16 object-contain" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">Maharaja Agrasen Hospital</h1>
-            <p className="text-gray-600 text-sm sm:text-base font-medium">Trustee & Patron Portal</p>
-            {userProfile?.name && (
-              <p className="text-indigo-600 text-xs sm:text-sm font-semibold mt-1 truncate">Welcome, {userProfile.name}</p>
-            )}
+              <div>
+                <h1 className="text-xl lg:text-2xl font-bold text-white tracking-tight">Admin Panel</h1>
+                <p className="text-xs text-slate-400 hidden sm:block">Hospital Management System</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                <div className="relative">
+                  <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                  <div className="absolute inset-0 w-2 h-2 bg-emerald-400 rounded-full animate-ping"></div>
+                </div>
+                <span className="text-sm text-emerald-400 font-medium">System Online</span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Single Marquee Updates */}
-      <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white overflow-hidden relative shadow-md">
-        <div className="py-2.5">
-          <div className="flex whitespace-nowrap" style={{ animation: 'marquee 25s linear infinite' }}>
-            {marqueeUpdates.map((update, index) => (
-              <div key={index} className="flex items-center mx-6 sm:mx-8 flex-shrink-0">
-                <Bell className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-2 flex-shrink-0" />
-                <span className="text-xs sm:text-sm font-semibold">{update}</span>
-              </div>
-            ))}
-            {/* Duplicate for seamless loop */}
-            {marqueeUpdates.map((update, index) => (
-              <div key={`dup-${index}`} className="flex items-center mx-6 sm:mx-8 flex-shrink-0">
-                <Bell className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-2 flex-shrink-0" />
-                <span className="text-xs sm:text-sm font-semibold">{update}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <style>{`
-          @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-          }
-        `}</style>
-      </div>
-
-      {/* Main Navigation Cards - Premium Design */}
-      <div className="px-4 sm:px-6 mt-4 sm:mt-6 mb-6 sm:mb-8">
-        <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-2 gap-3 sm:gap-4">
-          {quickActions.map((action) => (
-            <button
-              key={action.id}
-              onClick={() => onNavigate(action.screen)}
-              disabled={action.memberOnly && !isMember}
-              className={`bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-md border-2 border-gray-100 flex flex-col items-center text-center transition-all hover:shadow-xl hover:border-indigo-200 hover:-translate-y-1 active:scale-95 group relative overflow-hidden ${action.memberOnly && !isMember ? 'opacity-60' : ''}`}
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8 lg:mb-12">
+          {quickStats.map((stat, index) => (
+            <div 
+              key={index}
+              className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 lg:p-6 hover:bg-white/10 transition-all duration-300"
             >
-              <div className={`${action.color} p-3 sm:p-4 rounded-xl sm:rounded-2xl mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-sm`}>
-                <action.icon className={`h-6 w-6 sm:h-7 sm:w-7 ${action.iconColor}`} />
+              <div className="flex items-center justify-between mb-3">
+                <div className={`p-2 lg:p-3 ${stat.bg} rounded-xl`}>
+                  <stat.icon className={`h-4 w-4 lg:h-5 lg:w-5 ${stat.color}`} />
+                </div>
+                <TrendingUp className="h-4 w-4 text-emerald-400" />
               </div>
-              <h3 className="font-bold text-gray-900 text-sm sm:text-base leading-tight mb-1 sm:mb-1.5">{action.title}</h3>
-              <p className="text-gray-600 text-[10px] sm:text-xs font-medium leading-snug">{action.desc}</p>
-              {action.memberOnly && !isMember && (
-                <span className="absolute top-3 right-3 bg-gray-100 text-gray-400 p-1.5 rounded-full shadow-sm"><Shield className="h-3.5 w-3.5" /></span>
-              )}
-            </button>
+              <p className="text-2xl lg:text-3xl font-bold text-white mb-1">{stat.value}</p>
+              <p className="text-xs lg:text-sm text-slate-400">{stat.label}</p>
+            </div>
           ))}
         </div>
-      </div>
 
-      
-      {/* <div className="pb-20"></div>
-      <div className="pb-20"></div> */}
-      {/* Sponsored By Banner - Footer */}
-      <div className="banner-container mt-6 w-full">
-        <div className="banner-content bg-gradient-to-r from-indigo-800 to-indigo-900 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-2 border-indigo-700">
-          <div className="flex items-center justify-between p-1 sm:p-2">
-            {/* Left Side - Text Content */}
-            <div className="flex-1 pr-4">
-              {/* Decorative Line */}
-              <div className="flex items-center gap-2 mb-2">
-                <div className="h-px bg-gradient-to-r from-transparent via-indigo-300 to-indigo-300 flex-1"></div>
-                <span className="text-indigo-200 text-[10px] sm:text-xs font-light tracking-widest">SPONSORED BY</span>
-                <div className="h-px bg-gradient-to-r from-indigo-300 to-indigo-300 to-transparent flex-1"></div>
-              </div>
-
-              {/* Doctor Name */}
-              <h2 className="text-lg sm:text-l md:text-3xl font-serif italic text-white leading-tight">
-                Dr. Meena Subhash Gupta
-              </h2>
+        <div className="mb-8 lg:mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl lg:text-2xl font-bold text-white">Quick Actions</h2>
+              <p className="text-sm text-slate-400 mt-1">Access key features of the system</p>
             </div>
+          </div>
 
-            {/* Right Side - 3D Realistic Image */}
-            <div className="flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 relative group" style={{ perspective: '1200px', transformStyle: 'preserve-3d' }}>
-              {/* Enhanced 3D Shadow Layers */}
-              <div className="absolute inset-0 bg-black/30 rounded-2xl transform translate-x-3 translate-y-3 blur-md opacity-50" style={{ transform: 'translateZ(-10px)' }}></div>
-              <div className="absolute inset-0 bg-black/15 rounded-2xl transform translate-x-2 translate-y-2 blur-lg opacity-70" style={{ transform: 'translateZ(-5px)' }}></div>
-              <div className="absolute inset-0 bg-black/5 rounded-2xl transform translate-x-1 translate-y-1 blur-xl opacity-80" style={{ transform: 'translateZ(-2px)' }}></div>
-
-              {/* Realistic 3D Image Container */}
-              <div className="relative flex items-center justify-center overflow-visible transform transition-all duration-700 group-hover:scale-110" style={{ transformStyle: 'preserve-3d' }}>
-                <div className="relative" style={{ transform: 'translateZ(40px) rotateX(10deg) rotateY(-8deg)' }}>
-                  <img
-                    src="./src/assets/president.png"
-                    alt="Dr. Meena Subhash Gupta"
-                    className="w-full h-full object-cover rounded-2xl shadow-2xl transform transition-all duration-700 group-hover:scale-105"
-                    style={{
-                      filter: 'drop-shadow(0 20px 35px rgba(0,0,0,0.5)) drop-shadow(0 8px 15px rgba(0,0,0,0.4)) drop-shadow(0 3px 6px rgba(0,0,0,0.3))',
-                      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), 0 0 20px rgba(0,0,0,0.3)'
-                    }}
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'flex';
-                    }}
-                  />
-                  {/* Realistic Lighting Overlay */}
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/20 via-transparent to-black/30 pointer-events-none"></div>
-                  {/* Fallback placeholder */}
-                  <div className="text-center" style={{ display: 'none' }}>
-                    <User className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-1" />
-                    <p className="text-gray-400 text-[10px] sm:text-xs font-medium">Photo</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+            {adminActions.map((action, index) => (
+              <button
+                key={action.id}
+                onClick={() => onNavigate(action.screen)}
+                className="group relative overflow-hidden rounded-2xl lg:rounded-3xl bg-white/5 backdrop-blur-sm border border-white/10 p-5 lg:p-6 text-left hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] hover:-translate-y-1"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${action.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
+                
+                <div className="relative z-10">
+                  <div className={`inline-flex p-3 lg:p-4 rounded-xl lg:rounded-2xl bg-gradient-to-br ${action.gradient} mb-4 lg:mb-5 group-hover:scale-110 transition-transform duration-500`}>
+                    <action.icon className="h-6 w-6 lg:h-7 lg:w-7 text-white" />
+                  </div>
+                  
+                  <h3 className="text-lg lg:text-xl font-bold text-white mb-2 group-hover:text-white transition-colors">{action.title}</h3>
+                  <p className="text-sm text-slate-400 leading-relaxed mb-4">{action.desc}</p>
+                  
+                  <div className="flex items-center gap-2 text-sm font-medium text-slate-400 group-hover:text-white transition-colors">
+                    <span>Open</span>
+                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
                   </div>
                 </div>
-              </div>
 
-              {/* Enhanced 3D Light Effects */}
-              <div className="absolute top-2 left-2 w-6 h-6 bg-white/40 rounded-full blur-lg opacity-80" style={{ transform: 'translateZ(20px)' }}></div>
-              <div className="absolute bottom-2 right-2 w-4 h-4 bg-white/20 rounded-full blur-md opacity-60" style={{ transform: 'translateZ(15px)' }}></div>
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 rounded-full blur-xl opacity-50" style={{ transform: 'translateZ(25px) translateX(-50%) translateY(-50%)' }}></div>
+                <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${action.gradient} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left`}></div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
+          <div className="xl:col-span-2">
+            <NotificationsSection />
+          </div>
+          
+          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl lg:rounded-3xl p-5 lg:p-6">
+            <h3 className="text-lg font-bold text-white mb-4">Recent Activity</h3>
+            <div className="space-y-4">
+              {[
+                { text: 'New doctor registration approved', time: '2 mins ago', color: 'bg-emerald-500' },
+                { text: 'Patient referral completed', time: '15 mins ago', color: 'bg-blue-500' },
+                { text: 'Appointment scheduled', time: '1 hour ago', color: 'bg-amber-500' },
+                { text: 'Medical record updated', time: '2 hours ago', color: 'bg-violet-500' },
+                { text: 'New hospital added', time: '3 hours ago', color: 'bg-rose-500' },
+              ].map((activity, index) => (
+                <div key={index} className="flex items-start gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors">
+                  <div className={`w-2 h-2 ${activity.color} rounded-full mt-2 flex-shrink-0`}></div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-slate-300 truncate">{activity.text}</p>
+                    <p className="text-xs text-slate-500 mt-1">{activity.time}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      </div>
-      <style>{`
-        .banner-container {
-          width: 100%;
-          max-width: 100%;
-          margin-top: 1.5rem;
-        }
-        
-        .banner-content {
-          width: 100%;
-          box-sizing: border-box;
-          margin: 0 auto;
-        }
-      `}</style>
+      </main>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://hospital-management-3-7z4c.onrender.com/api';
+const API_BASE_URL = 'https://hospital-trustee-fiwe.vercel.app/api';
 
 // Create axios instance
 export const api = axios.create({
@@ -210,6 +210,7 @@ export const deleteReferral = async (referralId) => {
 };
 
 // Preload commonly used data
+
 export const preloadCommonData = async () => {
   try {
     // Load small amounts of data in parallel for quick initial load
