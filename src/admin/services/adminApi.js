@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.PROD 
-  ? 'https://hospital-trustee-fiwe.vercel.app/api' 
+  ? 'https://hospital-admin-7u3t.onrender.com/api' 
   : 'http://localhost:5001/api';
 
 // Create axios instance
