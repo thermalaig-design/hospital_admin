@@ -23,23 +23,9 @@ const PORT = process.env.PORT || 5001;
 // MIDDLEWARE
 // --------------------
 
-// CORS configuration
-const corsOptions = {
-  origin: [
-    'http://localhost:5173', // Vite default port
-    'http://localhost:3000', // React default port
-    'http://localhost:3001', // Alternative React port
-    'http://localhost:5000', // Alternative port
-    'https://hospital-trustee-fiwe.vercel.app', // Production frontend
-    'https://hospital-trustee-h3cv.vercel.app', // Alternative frontend
-    'https://hospital-management-3-7z4c.onrender.com', // Old backend URL
-    'https://hospital-trustee.vercel.app' // Alternative frontend
-  ],
-  credentials: true,
-  optionsSuccessStatus: 200
-};
 
-app.use(cors(corsOptions));
+
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
